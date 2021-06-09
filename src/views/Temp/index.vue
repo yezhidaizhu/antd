@@ -1,5 +1,7 @@
 <template>
-  Temp
+  <page-header-wrapper>
+    Temp
+  </page-header-wrapper>
 </template>
 
 <script>

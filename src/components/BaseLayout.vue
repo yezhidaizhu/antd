@@ -1,5 +1,5 @@
 <template>
-  <a-layout>
+  <a-layout class="global-layout">
     <a-layout-sider :width="width"
                     collapsible
                     :collapsed="collapsed"
@@ -18,26 +18,36 @@
           </slot>
         </div>
       </a-row>
-      <BaseMenu :collapsed="collapsed"
-                :menus="menus" />
+      <Menu :collapsed="collapsed"
+            :menus="menus" />
     </a-layout-sider>
     <a-layout :style="{ minHeight: '100vh' }">
-      <a-layout-header :style="{ background: '#fff', padding: 0 }">
+
+      <!-- header -->
+      <a-layout-header class="header">
         <slot name="header"></slot>
       </a-layout-header>
-      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <div :style="{ padding: '24px', background: '#fff' }">
+
+      <!-- content -->
+      <a-layout-content>
+        <div>
           <router-view></router-view>
         </div>
       </a-layout-content>
-      <a-layout-footer :style="{ textAlign: 'center' }">
-        Ant Design ©2018 Created by Ant UED
+
+      <!-- footer -->
+      <a-layout-footer>
+        <slot name="footer">
+          <div :style="{ textAlign: 'center' }">
+            Ant Design ©2018 Created by Ant UED
+          </div>
+        </slot>
       </a-layout-footer>
     </a-layout>
   </a-layout>
 </template>
 <script lang="ts">
-import BaseMenu from "@/components/BaseMenu.vue";
+import Menu from "@/components/Menu.vue";
 import { defineComponent } from "vue";
 
 export default defineComponent({
@@ -61,7 +71,7 @@ export default defineComponent({
     },
   },
   components: {
-    BaseMenu,
+    Menu,
   },
   computed: {},
   methods: {
@@ -72,17 +82,18 @@ export default defineComponent({
 });
 </script>
 <style>
-.layout-sider {
+.global-layout .layout-sider {
   box-shadow: 2px 0 6px rgb(0 21 41 / 35%);
   overflow: auto;
   height: 100vh;
   position: fixed;
   left: 0;
+  z-index: 3;
 }
-.layout-sider > * {
+.global-layout .layout-sider > * {
   user-select: none;
 }
-.layout-sider .title {
+.global-layout .layout-sider .title {
   color: #fff;
   font-size: 20px;
   line-height: 64px;
@@ -90,5 +101,11 @@ export default defineComponent({
   text-overflow: ellipsis;
   white-space: nowrap;
   padding: 0 24px;
+}
+.global-layout .header {
+  box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+  background: #fff;
+  padding: 0;
+  z-index: 2;
 }
 </style>
