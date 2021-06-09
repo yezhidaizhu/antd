@@ -1,5 +1,5 @@
 <template>
-  <a-sub-menu :key="menuInfo.key"
+  <a-sub-menu :key="menuInfo.path"
               v-bind="$attrs">
     <template #title>
       <span>
@@ -8,16 +8,16 @@
       </span>
     </template>
     <template v-for="item in menuInfo.children"
-              :key="item.name">
+              :key="item.path">
       <template v-if="!item.children">
-        <a-menu-item :key="item.name">
+        <a-menu-item :key="item.path">
           <AntdMenuIcon :type="item.meta && item.meta.icon" />
           <span>{{ item.name }}</span>
         </a-menu-item>
       </template>
       <template v-else>
         <SubMenu :menu-info="item"
-                 :key="item.name" />
+                 :key="item.path" />
       </template>
     </template>
   </a-sub-menu>

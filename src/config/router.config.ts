@@ -1,4 +1,4 @@
-import { BasicLayout } from '@/layouts'
+import { BasicLayout, BasicLayoutContent } from '@/layouts'
 
 // RouteView
 
@@ -6,17 +6,22 @@ export const asyncRouterMap = [
   {
     path: '/',
     name: 'index',
-    // component: BasicLayout,
-    component: () => import('@/views/Function/index.vue'),
+    component: BasicLayout,
+    // component: () => import('@/views/Function/index.vue'),
     meta: { title: 'Home' },
-    redirect: '/function',
+    redirect: '/function/function1',
     children: [
       {
         path: '/function',
         name: 'function',
-        // component: RouteView,
-        // meta: { title: 'menu.function', icon: 'table' },
-        component: () => import('@/views/Function/index.vue'),
+        component: BasicLayoutContent,
+        children: [
+          {
+            path: '/function/function1',
+            name: 'function1',
+            component: () => import('@/views/Function/index.vue'),
+          }
+        ]
       },
       {
         path: '/xfunction',

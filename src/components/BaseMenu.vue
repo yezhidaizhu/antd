@@ -1,22 +1,23 @@
 <template>
-  <div style="width: 256px"
-       class='layout-sider'>
-    <a-menu mode="inline"
+  <div>
+    <a-menu :mode="mode"
             theme="dark"
             :inline-collapsed="collapsed"
             :selectedKeys="selectedKeys"
-            :openKeys="openKeys">
-      <template v-for="item in list"
-                :key="item.name">
+            :openKeys="openKeys"
+            @openChange="openChange"
+            @click="handleClick">
+      <template v-for="item in menus"
+                :key="item.path">
         <template v-if="!item.children">
-          <a-menu-item :key="item.name">
+          <a-menu-item :key="item.path">
             <AntdMenuIcon :type="item.meta && item.meta.icon" />
             <span>{{ item.name }}</span>
           </a-menu-item>
         </template>
         <template v-else>
           <SubMenu :menu-info="item"
-                   :key="item.name" />
+                   :key="item.path" />
         </template>
       </template>
     </a-menu>
@@ -27,29 +28,13 @@ import { defineComponent, ref } from "vue";
 import SubMenu from "./SubMenu.vue";
 import AntdMenuIcon from "./AntdMenuIcon";
 
-const list = [
-  {
-    path: "/function",
-    name: "function",
-    meta: { title: "function", icon: "PieChartOutlined" },
-    component: () => import("@/views/Function/index.vue"),
-    // children: [
-    //   {
-    //     path: "/xfunction",
-    //     name: "xfunction",
-    //     meta: { title: "function", icon: "PieChartOutlined" },
-    //     component: () => import("@/views/Function/index.vue"),
-    //   },
-    // ],
-  },
-];
-
 export default defineComponent({
   data() {
     return {
-      selectedKeys: ["function", "xfunction"],
+      selectedKeys: [],
       openKeys: [],
       cachedOpenKeys: [],
+      mode: "inline",
     };
   },
   props: {
@@ -57,24 +42,25 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    menus: {
+      type: Array,
+      default: [],
+    },
   },
   components: {
     SubMenu,
     AntdMenuIcon,
   },
-  setup() {
-    const collapsed = ref<boolean>(false);
-    const toggleCollapsed = () => {
-      collapsed.value = !collapsed.value;
-    };
-    return {
-      list,
-      collapsed,
-      toggleCollapsed,
-    };
+  computed: {
+    rootSubmenuKeys(vm) {
+      var keys = [];
+      vm.menus.forEach(function (item) {
+        return keys.push(item.path);
+      });
+      return keys;
+    },
   },
   created() {
-    console.log(this.$router);
     const _this = this;
     this.$watch("$route", function () {
       _this.updateMenu();
@@ -111,6 +97,21 @@ export default defineComponent({
       this.collapsed
         ? (this.cachedOpenKeys = openKeys)
         : (this.openKeys = openKeys);
+    },
+    handleClick(item) {
+      this.$router.push(item?.key);
+    },
+    openChange(openKeys) {
+      const _this = this;
+      const latestOpenKey = openKeys.find(function (key) {
+        return !_this.openKeys.includes(key);
+      });
+
+      if (!_this.rootSubmenuKeys.includes(latestOpenKey)) {
+        _this.openKeys = openKeys;
+      } else {
+        _this.openKeys = latestOpenKey ? [latestOpenKey] : [];
+      }
     },
   },
   mounted() {
