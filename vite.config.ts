@@ -9,10 +9,12 @@ export default defineConfig({
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
     alias: {
       "@/layouts": path.resolve(__dirname, "./src/layouts"), // map '@' to './src' 
-      "@/views": path.resolve(__dirname, "./src/views"), // map '@' to './src' 
-      "@/router": path.resolve(__dirname, "./src/router"), // map '@' to './src' 
-      "@/config": path.resolve(__dirname, "./src/config"), // map '@' to './src' 
-      "@/components": path.resolve(__dirname, "./src/components"), // map '@' to './src' 
+      "@/views": path.resolve(__dirname, "./src/views"),
+      "@/router": path.resolve(__dirname, "./src/router"),
+      "@/config": path.resolve(__dirname, "./src/config"),
+      "@/components": path.resolve(__dirname, "./src/components"),
+      "@/api": path.resolve(__dirname, "./src/api"),
+      "@/utils": path.resolve(__dirname, "./src/utils"),
     },
   },
   css: {
@@ -21,5 +23,5 @@ export default defineConfig({
         javascriptEnabled: true
       }
     }
-  }
+  },
 })

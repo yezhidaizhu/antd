@@ -5,12 +5,9 @@
                    title="Title"
                    :breadcrumb="{ routes,itemRender }"
                    :sub-title="subTitle">
-      <template>
+      <template #extra>
         <slot name="extra"></slot>
       </template>
-      <!-- <template #itemRender="{}">
-        itemRender
-      </template> -->
       <slot name="wrapper"></slot>
     </a-page-header>
 
@@ -46,11 +43,11 @@ export default {
 
     const itemRender = ({ route, routes }) => {
       const props = {
-        to: "/function/function1"
+        to: route.path
       }
-      return h('router-link', props, [h('a', {}, route.breadcrumbName)]);
+      return h(RouterLink, props, [h('a', {}, route.breadcrumbName)]);
     }
-    console.log(route.matched);
+
     return {
       routes,
       itemRender,

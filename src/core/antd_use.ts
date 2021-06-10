@@ -16,7 +16,6 @@ import {
   Modal,
   Table,
   Tabs,
-  Icon,
   Badge,
   Popover,
   Dropdown,
@@ -49,7 +48,6 @@ import "ant-design-vue/dist/antd.css";
 import { App } from 'vue';
 
 const installAntd = (app: App<Element>) => {
-
   app.use(ConfigProvider)
   app.use(Layout)
   app.use(Input)
@@ -66,7 +64,6 @@ const installAntd = (app: App<Element>) => {
   app.use(Modal)
   app.use(Table)
   app.use(Tabs)
-  app.use(Icon)
   app.use(Badge)
   app.use(Popover)
   app.use(Dropdown)
