@@ -2,7 +2,7 @@
   <div class="page-header-wrapper">
     <!-- wrapper -->
     <a-page-header class="wrapper"
-                   title="Title"
+                   :title="title"
                    :breadcrumb="{ routes,itemRender }"
                    :sub-title="subTitle">
       <template #extra>
@@ -28,13 +28,8 @@ export default {
       default: "",
     }
   },
-  created() {
-    const _this = this;
-    this.$watch("$route", function () {
-      _this.upBreadcrumb();
-    });
-  },
-  setup() {
+  setup(props) {
+    let title = props.title;
     const route = useRoute();
     const routes = route?.matched?.map((item) => {
       const { name: breadcrumbName, path } = item;
@@ -48,10 +43,19 @@ export default {
       return h(RouterLink, props, [h('a', {}, route.breadcrumbName)]);
     }
 
+    title = title || routes?.pop()?.breadcrumbName;
+
     return {
       routes,
       itemRender,
+      title,
     }
+  },
+  created() {
+    const _this = this;
+    this.$watch("$route", function () {
+      _this.upBreadcrumb();
+    });
   },
   methods: {
     upBreadcrumb() {
