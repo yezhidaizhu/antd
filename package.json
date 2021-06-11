@@ -1,10 +1,11 @@
 {
   "version": "0.0.0",
   "scripts": {
-    "start": "npm run dev",
+    "start": "vite",
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "serve": "vite preview"
+    "build": "vite build",
+    "serve": "vite preview",
+    "preview": "vite build && vite preview"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.0.1",
@@ -17,6 +18,7 @@
     "vue-router": "^4.0.8"
   },
   "devDependencies": {
+    "@types/node": "^15.12.2",
     "@vitejs/plugin-vue": "^1.2.3",
     "@vue/compiler-sfc": "^3.0.5",
     "less": "^4.1.1",

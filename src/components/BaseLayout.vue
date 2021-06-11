@@ -31,17 +31,21 @@
       <!-- content -->
       <a-layout-content>
         <div>
-          <router-view></router-view>
+          <slot name="content">
+            <router-view></router-view>
+          </slot>
         </div>
       </a-layout-content>
 
       <!-- footer -->
       <a-layout-footer>
-        <slot name="footer">
-          <div :style="{ textAlign: 'center' }">
+        <a-row type="flex"
+               justify="center"
+               align="middle">
+          <slot name="footer">
             Ant Design ©2018 Created by Ant UED
-          </div>
-        </slot>
+          </slot>
+        </a-row>
       </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -105,7 +109,11 @@ export default defineComponent({
 .global-layout .header {
   box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
   background: #fff;
-  padding: 0;
+  padding: 0 16px;
   z-index: 2;
+}
+.global-layout .header .header-right {
+  float: right;
+  user-select: none;
 }
 </style>

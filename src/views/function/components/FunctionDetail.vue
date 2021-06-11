@@ -5,37 +5,38 @@
     <a-spin tip="Loading..."
             :spinning="loadingDetail">
       <!-- function Info -->
-      <a-form layout='inline'
+      <a-form class="form"
               hide-required-mark>
         <a-descriptions bordered
                         size="small">
-          <a-row slot="title"
-                 type="flex"
-                 justify="space-between"
-                 align="middle"
-                 :style="{paddingRight:'32px'}">
-            <span>Function Info</span>
-            <a-button type="primary"
-                      v-if="!editable"
-                      @click="onChgEditable"> Edit
-            </a-button>
-            <span v-else>
+          <template #title>
+            <a-row type="flex"
+                   justify="space-between"
+                   align="middle"
+                   :style="{paddingRight:'32px'}">
+              <span>Function Info</span>
               <a-button type="primary"
-                        @click="saveEdit"
-                        :style="{marginRight:'16px'}"
-                        :loading="loadingSave">
-                Save
+                        v-if="!editable"
+                        @click="onChgEditable"> Edit
               </a-button>
-              <a-button type="dashed"
-                        @click="cancelEdit">
-                Cancel
-              </a-button>
+              <span v-else>
+                <a-button type="primary"
+                          @click="saveEdit"
+                          :style="{marginRight:'16px'}"
+                          :loading="loadingSave">
+                  Save
+                </a-button>
+                <a-button type="dashed"
+                          @click="cancelEdit">
+                  Cancel
+                </a-button>
 
-            </span>
-          </a-row>
+              </span>
+            </a-row>
+          </template>
 
           <a-descriptions-item label="Name">
-            <a-form-item>
+            <a-form-item v-bind="validateInfos.name">
               <a-input v-model:value="modelRef.name"
                        class="inputDefault"
                        :disabled="!editable"
@@ -49,7 +50,8 @@
           <a-descriptions-item label="Classname"
                                :span="3">
             <a-form-item :wrapper-col="{ span: 24 }"
-                         :style="{width:'100%'}">
+                         :style="{width:'100%'}"
+                         v-bind="validateInfos.className">
               <a-input v-model:value="modelRef.className"
                        class="inputDefault"
                        :disabled="!editable"
@@ -57,19 +59,20 @@
             </a-form-item>
           </a-descriptions-item>
           <a-descriptions-item :span="3">
-            <span slot="label">
+            <template #label>
               <span :style="{marginRight:'8px'}">Input</span>
-              <a-button icon="plus"
+              <a-button icon="+"
                         shape="circle"
                         type="dashed"
                         size="small"
                         v-show="editable"
                         @click="addInput" />
-            </span>
+            </template>
             <a-form-item :wrapper-col="{ span: 24 }"
                          :style="{width:'100%'}"
                          v-for="item in inputFields"
-                         :key="item.key">
+                         :key="item.key"
+                         v-bind="validateInfos[item.key]">
               <a-row type="flex"
                      :gutter="8">
                 <a-col flex="1">
@@ -82,17 +85,17 @@
                   <a-button shape="circle"
                             type="dashed"
                             size="small"
-                            v-show="editable && inputs.length!==1"
+                            v-show="editable && inputFields.length!==1"
                             @click="rmInput(item.key)"> - </a-button>
                 </a-col>
               </a-row>
             </a-form-item>
-
           </a-descriptions-item>
           <a-descriptions-item label="Output"
                                :span="3">
             <a-form-item :wrapper-col="{ span: 24 }"
-                         :style="{width:'100%'}">
+                         :style="{width:'100%'}"
+                         v-bind="validateInfos.output">
               <a-input v-model:value="modelRef.output"
                        class="inputDefault"
                        :disabled="!editable"
@@ -103,7 +106,8 @@
                                :span="3"
                                v-if="editable">
             <a-form-item :wrapper-col="{ span: 24 }"
-                         :style="{width:'100%'}">
+                         :style="{width:'100%'}"
+                         v-bind="validateInfos.data">
               <div class="dropbox">
                 <a-upload-dragger v-model:file-list="modelRef.data"
                                   @change="normFile"
@@ -159,41 +163,18 @@
 <script>
 import { uid } from 'uid';
 import { useForm } from '@ant-design-vue/use';
-import { reactive } from 'vue';
+import { reactive, toRefs } from 'vue';
+import { InboxOutlined } from '@ant-design/icons-vue';
 
 export default {
   setup(props) {
-    const { currentFuncionInfo: { name, className, input, output } } = props;
-    const inputs = {};
-    const inputsResult = {};
-    const inputFields = input?.map((_input, i) => {
-      const key = `input_${i}`;
-      Object.assign(inputs, { [key]: _input });
-      Object.assign(inputsResult, { [key]: [{ required: true, message: 'Please input your input!' }] });
-      return { key, value: _input };
-    });
-
-    const modelRef = reactive({
-      name,
-      className,
-      output,
-      ...inputs,
-    })
-
-    const resultRef = reactive({
-      name: [{ required: true, message: 'Please input your Input!' }],
-      className: [{ required: true, message: 'Please input your className!' }],
-      output: [{ required: true, message: 'Please input your output!' }],
-      ...inputsResult,
-    })
-
-    const { resetFields, validateInfos, validate } = useForm(modelRef, resultRef);
-
+    const modelRef = reactive({})
+    const resultRef = reactive({})
     return {
-      validateInfos,
-      validate,
-      resetFields,
       modelRef,
+      resultRef,
+      inputFields: [],
+      ...useForm(modelRef, resultRef),
     }
   },
   data() {
@@ -216,6 +197,9 @@ export default {
       default: false,
     }
   },
+  components: {
+    InboxOutlined,
+  },
   methods: {
     onClose() {
       this.editable = false;
@@ -226,11 +210,35 @@ export default {
       this.$parent.closeDetail();
     },
     onReset() {
-      this.resetFields();
+      const { name, className, input, output } = this.currentFuncionInfo;
+      const inputs = {};
+      const inputsResult = {};
+      this.inputFields = input?.map((_input, i) => {
+        const key = `input_${i}`;
+        Object.assign(inputs, { [key]: _input });
+        Object.assign(inputsResult, { [key]: [{ required: true, message: 'Please input your input!' }] });
+        return { key, value: _input };
+      });
+
+      this.modelRef = reactive({
+        name,
+        className,
+        output,
+        data: [],
+        ...inputs,
+      })
+
+      this.resultRef = reactive({
+        ...this.resultRef,
+        name: [{ required: true, message: 'Please input your Input!' }],
+        className: [{ required: true, message: 'Please input your className!' }],
+        output: [{ required: true, message: 'Please input your output!' }],
+        ...inputsResult,
+      })
+      this.resetForm();
     },
     onChgEditable() {
       this.editable = true;
-      this.onReset();
     },
     cancelEdit() {
       this.onReset();
@@ -241,10 +249,22 @@ export default {
     },
     addInput() {
       const inputName = `input_${uid(3)}`;
-      this.inputs = [...this.inputs, { key: inputName, input: '' }];
+      this.inputFields.push({ key: inputName, value: '' });
+      this.modelRef = reactive({ ...this.modelRef, [inputName]: '' });
+      const o = { [inputName]: [{ required: true, message: 'Please enter input!' }] }
+      this.resultRef = reactive({ ...this.resultRef, ...o });
+      this.resetForm();
+      this.$forceUpdate();
     },
     rmInput(key) {
-      this.inputs = this.inputs?.filter(input => input.key !== key);
+      this.inputFields = this.inputFields?.filter(input => input.key !== key);
+      delete this.modelRef[key];
+      delete this.resultRef[key];
+
+      // this.modelRef = reactive({ ...this.modelRef, [inputName]: '' });
+      // this.resultRef = reactive({ ...this.resultRef, ...o });
+      // this.resetForm();
+      this.$forceUpdate();
     },
     saveEdit() {
       const _this = this;
@@ -268,19 +288,24 @@ export default {
     fbeforeUpload() {
       return false;
     },
+    resetForm() {
+      const { validateInfos, validate, resetFields } = useForm(this.modelRef, this.resultRef);
+      this.validateInfos = validateInfos;
+      this.validate = validate;
+      this.resetFields = resetFields;
+    },
   },
   computed: {
-    listenFuncChange() {
-      const { visible, currentFuncionInfo } = this
-      return { visible, currentFuncionInfo }
+    funcInfo() {
+      return {}
     }
   },
   watch: {
-    listenFuncChange() {
+    currentFuncionInfo() {
       if (this.visible) {
         this.onReset();
       }
-    }
+    },
   }
 }
 </script>
@@ -296,5 +321,8 @@ export default {
 }
 .editable:hover {
   border-color: #00000000;
+}
+.form .ant-form-item {
+  margin-bottom: 0;
 }
 </style>

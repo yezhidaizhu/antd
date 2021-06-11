@@ -1,46 +1,24 @@
 import { BasicLayout, BasicLayoutContent } from '@/layouts'
 
 // RouteView
-
 export const asyncRouterMap = [
   {
     path: '/',
-    name: 'index',
+    name: 'Home',
     component: BasicLayout,
-    // component: () => import('@/views/Function/index.vue'),
     meta: { title: 'Home' },
-    redirect: '/function/function1',
+    redirect: '/function',
     children: [
       {
         path: '/function',
         name: 'function',
-        component: BasicLayoutContent,
-        redirect: '/function/function1',
-        children: [
-          {
-            path: '/function/function1',
-            name: 'function1',
-            component: () => import('@/views/functionx/index.vue'),
-          },
-          {
-            path: '/function/function2',
-            name: 'function2',
-            component: () => import('@/views/temp/index.vue'),
-          }
-        ]
-      },
-      {
-        path: '/xfunction',
-        name: 'xfunction',
-        // component: RouteView,
-        // meta: { title: 'menu.function', icon: 'table' },
-        component: () => import('@/views/Temp/index.vue'),
+        meta: { title: 'function', icon: 'TableOutlined' }, // icon @https://2x.antdv.com/components/icon-cn
+        component: () => import('@/views/function/index.vue'),
       },
     ]
   },
-  // {
-  //   path: '*',
-  //   redirect: '/404',
-  //   hidden: true
-  // }
+  {
+    path: '/:pathMatch(.*)*',
+    component: () => import('@/views/exception/404.vue')
+  }
 ]

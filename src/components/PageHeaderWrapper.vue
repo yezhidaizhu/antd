@@ -23,14 +23,19 @@ import { h } from 'vue';
 
 export default {
   props: {
+    title: {
+      type: String,
+      default: "",
+    },
     subTitle: {
       type: String,
       default: "",
     }
   },
   setup(props) {
-    let title = props.title;
     const route = useRoute();
+    const title = props.title || route.meta.title;
+
     const routes = route?.matched?.map((item) => {
       const { name: breadcrumbName, path } = item;
       return { path, breadcrumbName };
@@ -42,8 +47,6 @@ export default {
       }
       return h(RouterLink, props, [h('a', {}, route.breadcrumbName)]);
     }
-
-    title = title || routes?.pop()?.breadcrumbName;
 
     return {
       routes,

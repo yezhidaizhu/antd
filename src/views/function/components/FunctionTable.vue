@@ -26,7 +26,7 @@
 <script lang="ts">
 // import moment from 'moment';
 import { deleteFunc } from "@/api/func";
-import { ref, defineComponent } from "vue";
+import { ref, defineComponent, PropType } from "vue";
 
 const columns = [
   {
@@ -59,12 +59,11 @@ export default defineComponent({
       default: [],
     },
     onSelFunction: {
-      type: Function,
-      default: (v) => {},
+      type: Function as PropType<() => void>,
     },
     onShowDetail: {
-      type: Function,
-      default: (v) => {},
+      type: Function as PropType<() => void>,
+      default: () => {},
     },
     loadingList: {
       type: Boolean,
